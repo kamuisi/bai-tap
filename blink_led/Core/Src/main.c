@@ -45,7 +45,6 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
-static int effect_num = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,36 +59,7 @@ static void MX_TIM1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void Switch_Effect(void)
-{
-	switch(effect_num)
-	{
-		case EFFECT_NUM_1:
-		{
-			HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_SET);
-			effect_num = EFFECT_NUM_2;
-			break;
-		}
-		case EFFECT_NUM_2:
-		{
-			HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_RESET);
-			effect_num = EFFECT_NUM_3;
-			break;
-		}
-		case EFFECT_NUM_3:
-		{
-			HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_RESET);
-			effect_num = EFFECT_NUM_1;
-			break;
-		}
-	}
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -125,9 +95,6 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_SET);
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
@@ -135,10 +102,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_GPIO_TogglePin(GPIOB, LEDR_Pin);
-	  HAL_GPIO_TogglePin(GPIOB, LEDG_Pin);
-	  HAL_GPIO_TogglePin(GPIOB, LEDB_Pin);
-	  HAL_Delay(300);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -252,7 +215,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 7199;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 65535;
+  htim2.Init.Period = 999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -353,10 +316,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */

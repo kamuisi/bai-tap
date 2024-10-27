@@ -51,10 +51,9 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void Switch_Effect(void);
 
 /* USER CODE BEGIN EFP */
-
+void Switch_Effect(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

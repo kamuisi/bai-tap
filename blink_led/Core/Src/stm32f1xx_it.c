@@ -41,7 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+static int effect_num = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -51,15 +51,37 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void Switch_Effect(void)
+{
+	switch(effect_num)
+	{
+		case EFFECT_NUM_1:
+		{
+			effect_num = EFFECT_NUM_2;
+			break;
+		}
+		case EFFECT_NUM_2:
+		{
+			HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_RESET);
+			effect_num = EFFECT_NUM_3;
+			break;
+		}
+		case EFFECT_NUM_3:
+		{
+			effect_num = EFFECT_NUM_1;
+			break;
+		}
+	}
+}
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim1;
-extern TIM_HandleTypeDef htim4;
 /* USER CODE BEGIN EV */
-
+extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim1;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -205,6 +227,7 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
+  /* USER CODE BEGIN EXTI0_IRQn 0 */
 	if(HAL_GPIO_ReadPin(GPIOB, BTN2_Pin) == 0)
 	{
 		HAL_TIM_Base_Start(&htim4);
@@ -221,10 +244,9 @@ void EXTI0_IRQHandler(void)
 		}
 		else
 		{
-			__HAL_TIM_SET_COUNTER(&htim2, effect_time - TIME_EFFECT_ADD_OR_SUB * (uint32_t)time_greater_2);
+			__HAL_TIM_SET_AUTORELOAD(&htim2, effect_time - TIME_EFFECT_ADD_OR_SUB * (uint32_t)time_greater_2);
 		}
 	}
-  /* USER CODE BEGIN EXTI0_IRQn 0 */
 
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(BTN2_Pin);
@@ -238,6 +260,7 @@ void EXTI0_IRQHandler(void)
   */
 void EXTI1_IRQHandler(void)
 {
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
 	if(HAL_GPIO_ReadPin(GPIOB, BTN1_Pin) == 0)
 	{
 		HAL_TIM_Base_Start(&htim1);
@@ -250,14 +273,13 @@ void EXTI1_IRQHandler(void)
 		int time_greater_1 = (int)(button_1_time - TIME_LIMIT_1) / TIME_CHANGE;
 		if(time_greater_1 < 0)
 		{
-			__HAL_TIM_SET_COUNTER(&htim2, effect_time + TIME_EFFECT_ADD_OR_SUB);
+			__HAL_TIM_SET_AUTORELOAD(&htim2, effect_time + TIME_EFFECT_ADD_OR_SUB);
 		}
 		else
 		{
-			__HAL_TIM_SET_COUNTER(&htim2, effect_time + TIME_EFFECT_ADD_OR_SUB * (uint32_t)time_greater_1);
+			__HAL_TIM_SET_AUTORELOAD(&htim2, effect_time + TIME_EFFECT_ADD_OR_SUB * (uint32_t)time_greater_1);
 		}
 	}
-  /* USER CODE BEGIN EXTI1_IRQn 0 */
 
   /* USER CODE END EXTI1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(BTN1_Pin);
@@ -271,8 +293,43 @@ void EXTI1_IRQHandler(void)
   */
 void TIM2_IRQHandler(void)
 {
-	Switch_Effect();
   /* USER CODE BEGIN TIM2_IRQn 0 */
+	switch(effect_num)
+		{
+			case EFFECT_NUM_1:
+			{
+				HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_SET);
+				HAL_Delay(100);
+				HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_SET);
+				HAL_Delay(100);
+				HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_SET);
+				HAL_Delay(100);
+				HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_RESET);
+				break;
+			}
+			case EFFECT_NUM_2:
+			{
+				HAL_GPIO_TogglePin(GPIOB, LEDR_Pin);
+				HAL_GPIO_TogglePin(GPIOB, LEDG_Pin);
+				HAL_GPIO_TogglePin(GPIOB, LEDB_Pin);
+				break;
+			}
+			case EFFECT_NUM_3:
+			{
+				HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_SET);
+				HAL_Delay(100);
+				HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_SET);
+				HAL_Delay(100);
+				HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_SET);
+				HAL_Delay(100);
+				HAL_GPIO_WritePin(GPIOB, LEDR_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOB, LEDG_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOB, LEDB_Pin, GPIO_PIN_RESET);
+				break;
+			}
+		}
 
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
