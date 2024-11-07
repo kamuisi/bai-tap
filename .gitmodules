@@ -1,0 +1,3 @@
+[submodule "lab_1/blink_led"]
+	path = lab_1/blink_led
+	url = https://github.com/kamuisi/CDHTN.git
